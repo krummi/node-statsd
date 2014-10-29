@@ -35,7 +35,7 @@ function assertMockClientMethod(method, finished){
     finished();
   }, function(server){
     var address = server.address(),
-        statsd = new StatsD(address.address, address.port, 'prefix', 'suffix', false, false,
+        statsd = new StatsD(address.address, address.port, 'prefix', 'suffix', false,
                             /* mock = true */ true),
         socket = dgram.createSocket("udp4"),
         buf = new Buffer(testFinished),
@@ -87,7 +87,7 @@ describe('StatsD', function(){
       var statsd = new StatsD('host', 1234, 'prefix', 'suffix');
       assert.equal(statsd.host, 'host');
       assert.equal(statsd.port, 1234);
-      assert.equal(statsd.prefix, 'prefix');
+      assert.equal(statsd.prefix, 'prefix.'); // Auto-suffix the prefix with dot.
       assert.equal(statsd.suffix, 'suffix');
     });
 
@@ -95,7 +95,7 @@ describe('StatsD', function(){
       var statsd = new StatsD({host: 'host', port: 1234, prefix: 'prefix', suffix: 'suffix'});
       assert.equal(statsd.host, 'host');
       assert.equal(statsd.port, 1234);
-      assert.equal(statsd.prefix, 'prefix');
+      assert.equal(statsd.prefix, 'prefix.');
       assert.equal(statsd.suffix, 'suffix');
     });
 
@@ -136,20 +136,8 @@ describe('StatsD', function(){
       });
     });
 
-    it('should create a global variable set to StatsD() when specified', function(){
-      var statsd = new StatsD('host', 1234, 'prefix', 'suffix', true);
-      assert.ok(global.statsd instanceof StatsD);
-      //remove it from the namespace to not fail other tests
-      delete global.statsd;
-    });
-
-    it('should not create a global variable when not specified', function(){
-      var statsd = new StatsD('host', 1234, 'prefix', 'suffix');
-      assert.equal(global.statsd, undefined);
-    });
-
     it('should create a mock Client when mock variable is specified', function(){
-      var statsd = new StatsD('host', 1234, 'prefix', 'suffix', false, false, true);
+      var statsd = new StatsD('host', 1234, 'prefix', 'suffix', false, true);
       assert.ok(statsd.mock);
     });
 
