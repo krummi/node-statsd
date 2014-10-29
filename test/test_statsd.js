@@ -161,6 +161,32 @@ describe('StatsD', function(){
       });
     });
 
+    it('should send proper time format WITH a trailing-dot prefix', function(finished){
+      udpTest(function(message, server){
+        assert.equal(message, 'test.test:42|ms');
+        server.close();
+        finished();
+      }, function(server){
+        var address = server.address(),
+          statsd = new StatsD({ host: address.address, port: address.port, prefix: 'test.' });
+
+        statsd.timing('test', 42);
+      });
+    });
+
+    it('should send proper time format WITHOUT a trailing-dot prefix', function(finished){
+      udpTest(function(message, server){
+        assert.equal(message, 'test.test:42|ms');
+        server.close();
+        finished();
+      }, function(server){
+        var address = server.address(),
+          statsd = new StatsD({ host: address.address, port: address.port, prefix: 'test' });
+
+        statsd.timing('test', 42);
+      });
+    });
+
     it('should send proper time format with tags', function(finished){
       udpTest(function(message, server){
         assert.equal(message, 'test:42|ms|#foo,bar');
